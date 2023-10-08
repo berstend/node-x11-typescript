@@ -1,0 +1,60 @@
+import { ProtocolTemplates } from './xcore';
+declare type ValueMaskValue = {
+    format: string;
+    mask: number;
+};
+export declare type ValueMask = {
+    CreateWindow: {
+        cursor: ValueMaskValue;
+        backingPlanes: ValueMaskValue;
+        overrideRedirect: ValueMaskValue;
+        backingPixel: ValueMaskValue;
+        bitGravity: ValueMaskValue;
+        backgroundPixmap: ValueMaskValue;
+        borderPixel: ValueMaskValue;
+        borderPixmap: ValueMaskValue;
+        saveUnder: ValueMaskValue;
+        backgroundPixel: ValueMaskValue;
+        doNotPropagateMask: ValueMaskValue;
+        winGravity: ValueMaskValue;
+        backingStore: ValueMaskValue;
+        eventMask: ValueMaskValue;
+        colormap: ValueMaskValue;
+    };
+    CreateGC: {
+        clipXOrigin: ValueMaskValue;
+        joinStyle: ValueMaskValue;
+        capStyle: ValueMaskValue;
+        arcMode: ValueMaskValue;
+        subwindowMode: ValueMaskValue;
+        foreground: ValueMaskValue;
+        graphicsExposures: ValueMaskValue;
+        clipMask: ValueMaskValue;
+        dashOffset: ValueMaskValue;
+        lineWidth: ValueMaskValue;
+        dashes: ValueMaskValue;
+        lineStyle: ValueMaskValue;
+        fillRule: ValueMaskValue;
+        background: ValueMaskValue;
+        function: ValueMaskValue;
+        tileStippleYOrigin: ValueMaskValue;
+        tile: ValueMaskValue;
+        fillStyle: ValueMaskValue;
+        stipple: ValueMaskValue;
+        planeMask: ValueMaskValue;
+        clipYOrigin: ValueMaskValue;
+        tileStippleXOrigin: ValueMaskValue;
+        font: ValueMaskValue;
+    };
+    ConfigureWindow: {
+        stackMode: ValueMaskValue;
+        sibling: ValueMaskValue;
+        borderWidth: ValueMaskValue;
+        x: ValueMaskValue;
+        width: ValueMaskValue;
+        y: ValueMaskValue;
+        height: ValueMaskValue;
+    };
+};
+export declare const coreRequests: ProtocolTemplates;
+export {};

@@ -3,19 +3,25 @@ import { eventMask as em } from './eventmask'
 export { createClient } from './xcore'
 export { em as eventMask }
 
-Object.defineProperty(module.exports, 'keySyms', {
-  enumerable: true,
-  get: function() {
-    return require('./keysyms')
-  }
-})
+import keysms from './keysyms'
+import gcfunction from './gcfunction'
 
-Object.defineProperty(module.exports, 'gcFunction', {
-  enumerable: true,
-  get: function() {
-    return require('./gcfunction')
-  }
-})
+export const keySyms = keysms
+export const gcFunction = gcfunction
+
+// Object.defineProperty(module.exports, 'keySyms', {
+//   enumerable: true,
+//   get: function () {
+//     return keysms
+//   },
+// })
+
+// Object.defineProperty(module.exports, 'gcFunction', {
+//   enumerable: true,
+//   get: function () {
+//     return gcfunction
+//   },
+// })
 
 // TODO:
 // keepe everything in namespace for consistensy (eventMask, keySyms, class, destination ...
@@ -31,7 +37,6 @@ export const InputOnly = 2
 // destination
 export const PointerWindow = 0
 export const InputFocus = 1
-
 
 // TODO
 export const bitGravity = {}

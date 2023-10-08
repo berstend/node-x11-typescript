@@ -1,0 +1,44 @@
+import { XCallback, XExtension, XExtensionInit } from '../xcore';
+import { RenderPipeline } from './glxrender';
+export interface GLX extends XExtension {
+    QueryVersion: (clientMaj: number, clientMin: number, callback: XCallback<[number, number]>) => void;
+    QueryServerString: (screen: number, name: number, callback: XCallback<string>) => void;
+    CreateGLXPixmap: (screen: number, visual: number, pixmap: number, glxpixmap: number) => void;
+    QueryExtensionsString: (screen: number, callback: XCallback<string>) => void;
+    GetVisualConfigs: (screen: number, callback: XCallback<{
+        visualID: number;
+        visualType: number;
+        rgbMode: number;
+        redBits: number;
+        greenBits: number;
+        blueBits: number;
+        alphaBits: number;
+        accumRedBits: number;
+        accumGreen: number;
+        accumBlueBits: number;
+        accumAlphaBits: number;
+        doubleBufferMode: number;
+        stereoMode: number;
+        rgbBits: number;
+        depthBits: number;
+        stencilBits: number;
+        numAuxBuffers: number;
+        level: number;
+    }[]>) => void;
+    GetFBConfigs: (screen: number, callback: XCallback<[number, number][][]>) => void;
+    CreateContext: (ctx: number, visual: number, screen: number, shareListCtx: number, isDirect: boolean) => void;
+    SwapBuffers: (ctx: number, drawable: number) => void;
+    NewList: (ctx: number, list: number, mode: number) => void;
+    EndList: (ctx: number) => void;
+    GenLists: (ctx: number, count: number, callback: XCallback<number>) => void;
+    GenTextures: (ctx: number, count: number, callback: XCallback<string>) => void;
+    MakeCurrent: (drawable: number, ctx: number, oldctx: number, callback: XCallback<number>) => void;
+    Finish: (ctx: number, callback: XCallback<void>) => void;
+    Render: (ctx: number, data: Buffer | Array<Buffer>) => void;
+    VendorPrivate: (ctx: number, code: number, data: Buffer) => void;
+    BindTexImage: (ctx: number, drawable: number, buffer: number, attribs: number[]) => void;
+    ReleaseTexImage: (ctx: number, drawable: number, buffer: number) => void;
+    RenderLarge: (ctx: number, requestNum: number, requestTotal: number, data: Buffer) => void;
+    renderPipeline: (ctx: number) => RenderPipeline;
+}
+export declare const requireExt: XExtensionInit<GLX>;

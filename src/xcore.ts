@@ -11,11 +11,46 @@ import { xErrors } from './xerrors'
 
 export type RequestTemplate = Function | [string, Array<number>]
 export type ResponseTemplate = Function
-export type ProtocolTemplates = { [key: string]: [RequestTemplate] | [RequestTemplate, ResponseTemplate] }
+export type ProtocolTemplates = {
+  [key: string]: [RequestTemplate] | [RequestTemplate, ResponseTemplate]
+}
 
+import * as module_apple_wm from './ext/apple-wm'
+import * as module_big_requests from './ext/big-requests'
+import * as module_composite from './ext/composite'
+import * as module_damage from './ext/damage'
+import * as module_dpms from './ext/dpms'
+import * as module_fixes from './ext/fixes'
+import * as module_glxconstants from './ext/glxconstants'
+import * as module_glx from './ext/glx'
+import * as module_glxrender from './ext/glxrender'
+import * as module_randr from './ext/randr'
+import * as module_render from './ext/render'
+import * as module_screen_saver from './ext/screen-saver'
+import * as module_shape from './ext/shape'
+import * as module_xc_misc from './ext/xc-misc'
+import * as module_xtest from './ext/xtest'
+
+const extModules = {
+  'apple-wm': module_apple_wm,
+  'big-requests': module_big_requests,
+  composite: module_composite,
+  damage: module_damage,
+  dpms: module_dpms,
+  fixes: module_fixes,
+  glxconstants: module_glxconstants,
+  glx: module_glx,
+  glxrender: module_glxrender,
+  randr: module_randr,
+  render: module_render,
+  'screen-saver': module_screen_saver,
+  shape: module_shape,
+  'xc-misc': module_xc_misc,
+  xtest: module_xtest,
+}
 
 export interface StackTrace {
-  stack: string,
+  stack: string
   timestamp: number
 }
 
@@ -24,71 +59,71 @@ export interface XCallback<T, E = XError> {
 }
 
 export interface XConnectionOptions {
-  xAuthority?: string,
-  display?: string,
-  debug?: boolean,
+  xAuthority?: string
+  display?: string
+  debug?: boolean
   disableBigRequests?: boolean
 }
 
 export interface XScreen {
-  root: number,
-  default_colormap: number,
-  white_pixel: number,
-  black_pixel: number,
-  input_masks: number,
-  pixel_width: number,
-  pixel_height: number,
-  mm_width: number,
-  mm_height: number,
-  min_installed_maps: number,
-  max_installed_maps: number,
-  root_visual: number,
-  root_depth: number,
-  backing_stores: number,
-  num_depths: number,
-  depths: { [key: string]: { [key: string]: XVisual } },
+  root: number
+  default_colormap: number
+  white_pixel: number
+  black_pixel: number
+  input_masks: number
+  pixel_width: number
+  pixel_height: number
+  mm_width: number
+  mm_height: number
+  min_installed_maps: number
+  max_installed_maps: number
+  root_visual: number
+  root_depth: number
+  backing_stores: number
+  num_depths: number
+  depths: { [key: string]: { [key: string]: XVisual } }
 }
 
 export interface XDisplay {
-  screen_num: number,
-  screen: XScreen[],
-  resource_mask: number,
-  vlen: number,
-  rsrc_shift: number,
-  rsrc_id: number,
+  screen_num: number
+  screen: XScreen[]
+  resource_mask: number
+  vlen: number
+  rsrc_shift: number
+  rsrc_id: number
   vendor: string
-  format: { [key: number]: { bits_per_pixel: number, scanline_pad: number } }
-  major: number,
-  minor: number,
-  xlen: number,
-  release: number,
-  resource_base: number,
-  motion_buffer_size: number,
-  max_request_length: number,
-  format_num: number,
-  image_byte_order: number,
-  bitmap_bit_order: number,
-  bitmap_scanline_unit: number,
-  bitmap_scanline_pad: number,
-  min_keycode: number,
-  max_keycode: number,
+  format: { [key: number]: { bits_per_pixel: number; scanline_pad: number } }
+  major: number
+  minor: number
+  xlen: number
+  release: number
+  resource_base: number
+  motion_buffer_size: number
+  max_request_length: number
+  format_num: number
+  image_byte_order: number
+  bitmap_bit_order: number
+  bitmap_scanline_unit: number
+  bitmap_scanline_pad: number
+  min_keycode: number
+  max_keycode: number
   client?: XClient
 }
 
 export interface XVisual {
-  vid: number,
-  class: number,
-  bits_per_rgb: number,
-  map_ent: number,
-  red_mask: number,
-  green_mask: number,
+  vid: number
+  class: number
+  bits_per_rgb: number
+  map_ent: number
+  red_mask: number
+  green_mask: number
   blue_mask: number
 }
 
 export interface XEvent {
   type: number
-  seq: number,
-  rawData?: Buffer,
+  seq: number
+  rawData?: Buffer
   wid?: number
   parent?: number
 }
@@ -102,9 +137,9 @@ export interface XErrorParser<T = XError> {
 }
 
 export interface XExtension {
-  present: number,
-  majorOpcode: number,
-  firstEvent: number,
+  present: number
+  majorOpcode: number
+  firstEvent: number
   firstError: number
 }
 
@@ -144,12 +179,14 @@ export class XError extends Error {
   majorOpcode: number
   message: string
 
-  constructor(error: number,
-              seq: number,
-              badParam: number,
-              minorOpcode: number,
-              majorOpcode: number,
-              message: string) {
+  constructor(
+    error: number,
+    seq: number,
+    badParam: number,
+    minorOpcode: number,
+    majorOpcode: number,
+    message: string
+  ) {
     super()
     this.error = error
     this.seq = seq
@@ -196,7 +233,7 @@ export class XClient extends EventEmitter {
 
   replies: { [key: number]: [Function | undefined, XCallback<any>] } = {}
 
-  atoms: (Readonly<StdAtoms> & { [key: string]: number }) = stdAtoms
+  atoms: Readonly<StdAtoms> & { [key: string]: number } = stdAtoms
   atomNames: { [key: number]: string } = (() => {
     const names: { [key: number]: string } = {}
     Object.keys(stdAtoms).forEach((key) => {
@@ -216,49 +253,157 @@ export class XClient extends EventEmitter {
 
   // core protocol
   QueryExtension?: <E extends XExtension>(extName: string, callback: XCallback<E, Error>) => void
-  CreateWindow?: (id: number,
-                  parentId: number,
-                  x: number,
-                  y: number,
-                  width: number,
-                  height: number,
-                  borderWidth?: number,
-                  depth?: number,
-                  _class?: number,
-                  visual?: number,
-                  values?: Partial<Exclude<{ [key in keyof ValueMask['CreateWindow']]: number | boolean }, 'id' | 'parentId' | 'x' | 'y' | 'width' | 'height' | 'borderWidth' | 'depth' | '_class' | 'visual'>>
+  CreateWindow?: (
+    id: number,
+    parentId: number,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    borderWidth?: number,
+    depth?: number,
+    _class?: number,
+    visual?: number,
+    values?: Partial<
+      Exclude<
+        { [key in keyof ValueMask['CreateWindow']]: number | boolean },
+        | 'id'
+        | 'parentId'
+        | 'x'
+        | 'y'
+        | 'width'
+        | 'height'
+        | 'borderWidth'
+        | 'depth'
+        | '_class'
+        | 'visual'
+      >
+    >
   ) => void
   MapWindow?: (wid: number) => void
-  QueryPointer?: (wid: number, callback: XCallback<{
-    root: number,
-    child: number,
-    rootX: number,
-    rootY: number,
-    childX: number,
-    childY: number,
-    keyMask: number,
-    sameScreen: number
-  }>) => void
-  WarpPointer?: (srcWin: number, dstWin: number, srcX: number, srcY: number, srcWidth: number, srcHeight: number, dstX: number, dstY: number) => void
-  GrabPointer?: (wid: number, ownerEvents: boolean, mask: number, pointerMode: number, keybMode: number, confineTo: number, cursor: number, time: number) => void
+  QueryPointer?: (
+    wid: number,
+    callback: XCallback<{
+      root: number
+      child: number
+      rootX: number
+      rootY: number
+      childX: number
+      childY: number
+      keyMask: number
+      sameScreen: number
+    }>
+  ) => void
+  WarpPointer?: (
+    srcWin: number,
+    dstWin: number,
+    srcX: number,
+    srcY: number,
+    srcWidth: number,
+    srcHeight: number,
+    dstX: number,
+    dstY: number
+  ) => void
+  GrabPointer?: (
+    wid: number,
+    ownerEvents: boolean,
+    mask: number,
+    pointerMode: number,
+    keybMode: number,
+    confineTo: number,
+    cursor: number,
+    time: number
+  ) => void
   AllowEvents?: (mode: number, ts: number) => void
   InternAtom?: (returnOnlyIfExist: boolean, value: string, cb: XCallback<number>) => void
   GetAtomName?: (atom: number, cb: XCallback<string>) => void
-  QueryTree?: (window: number, callback: XCallback<{
-    root: number,
-    parent: number,
-    children: number[]
-  }>) => void
-  ChangeWindowAttributes?: (wid: number, values: Partial<{ [key in keyof ValueMask['CreateWindow']]: number }>) => void
+  QueryTree?: (
+    window: number,
+    callback: XCallback<{
+      root: number
+      parent: number
+      children: number[]
+    }>
+  ) => void
+  ChangeWindowAttributes?: (
+    wid: number,
+    values: Partial<{ [key in keyof ValueMask['CreateWindow']]: number }>
+  ) => void
   DestroyWindow?: (wid: number) => void
-  ChangeProperty?: (mode: 0 | 1 | 2, wid: number, atomName: number, atomType: number, units: 8 | 16 | 32, data: Buffer | string) => void
-  GetProperty?: (del: number, wid: number, name: number, type: number, longOffset: number, longLength: number, callback: XCallback<{ type: number, bytesAfter: number, data: Buffer }>) => void
-  CreateGC?: (cid: number, drawable: number, values: Partial<{
-    clipXOrigin: number; joinStyle: number; capStyle: number; arcMode: number; subwindowMode: number; foreground: number; graphicsExposures: number; clipMask: number; dashOffset: number; lineWidth: number; dashes: number; lineStyle: number; fillRule: number; background: number; function: number; tileStippleYOrigin: number; tile: number; fillStyle: number; stipple: number; planeMask: number; clipYOrigin: number; tileStippleXOrigin: number; font: number
-  }>) => void
-  ChangeGC?: (cid: number, values: Partial<{
-    clipXOrigin: number; joinStyle: number; capStyle: number; arcMode: number; subwindowMode: number; foreground: number; graphicsExposures: number; clipMask: number; dashOffset: number; lineWidth: number; dashes: number; lineStyle: number; fillRule: number; background: number; function: number; tileStippleYOrigin: number; tile: number; fillStyle: number; stipple: number; planeMask: number; clipYOrigin: number; tileStippleXOrigin: number; font: number
-  }>) => void
+  ChangeProperty?: (
+    mode: 0 | 1 | 2,
+    wid: number,
+    atomName: number,
+    atomType: number,
+    units: 8 | 16 | 32,
+    data: Buffer | string
+  ) => void
+  GetProperty?: (
+    del: number,
+    wid: number,
+    name: number,
+    type: number,
+    longOffset: number,
+    longLength: number,
+    callback: XCallback<{ type: number; bytesAfter: number; data: Buffer }>
+  ) => void
+  CreateGC?: (
+    cid: number,
+    drawable: number,
+    values: Partial<{
+      clipXOrigin: number
+      joinStyle: number
+      capStyle: number
+      arcMode: number
+      subwindowMode: number
+      foreground: number
+      graphicsExposures: number
+      clipMask: number
+      dashOffset: number
+      lineWidth: number
+      dashes: number
+      lineStyle: number
+      fillRule: number
+      background: number
+      function: number
+      tileStippleYOrigin: number
+      tile: number
+      fillStyle: number
+      stipple: number
+      planeMask: number
+      clipYOrigin: number
+      tileStippleXOrigin: number
+      font: number
+    }>
+  ) => void
+  ChangeGC?: (
+    cid: number,
+    values: Partial<{
+      clipXOrigin: number
+      joinStyle: number
+      capStyle: number
+      arcMode: number
+      subwindowMode: number
+      foreground: number
+      graphicsExposures: number
+      clipMask: number
+      dashOffset: number
+      lineWidth: number
+      dashes: number
+      lineStyle: number
+      fillRule: number
+      background: number
+      function: number
+      tileStippleYOrigin: number
+      tile: number
+      fillStyle: number
+      stipple: number
+      planeMask: number
+      clipYOrigin: number
+      tileStippleXOrigin: number
+      font: number
+    }>
+  ) => void
   GetWindowAttributes?: (wid: number, callback: XCallback<WindowAttributes>) => void
   DeleteProperty?: (wid: number, atom: number) => void
   KillClient?: (resource: number) => void
@@ -269,8 +414,24 @@ export class XClient extends EventEmitter {
   MoveResizeWindow?: (win: number, x: number, y: number, width: number, height: number) => void
   RaiseWindow?: (win: number) => void
   LowerWindow?: (win: number) => void
-  ConfigureWindow?: (win: number, options: { stackMode: number, sibling: number; borderWidth: number; x: number; y: number; width: number; height: number }) => void
-  SendEvent?: (destination: number, propagate: boolean, eventMask: number, eventRawData: Buffer) => void
+  ConfigureWindow?: (
+    win: number,
+    options: {
+      stackMode: number
+      sibling: number
+      borderWidth: number
+      x: number
+      y: number
+      width: number
+      height: number
+    }
+  ) => void
+  SendEvent?: (
+    destination: number,
+    propagate: boolean,
+    eventMask: number,
+    eventRawData: Buffer
+  ) => void
 
   constructor(displayNum: string, screenNum: string, options: XConnectionOptions) {
     super()
@@ -316,12 +477,11 @@ export class XClient extends EventEmitter {
     // flushed to stream as result of call to .flush
     // TODO: listen for drain event and flush automatically
     // packStream.pipe(stream);
-    packStream.on('data', data => stream.write(data))
-    stream.on('data', data => packStream.write(data))
+    packStream.on('data', (data) => stream.write(data))
+    stream.on('data', (data) => packStream.write(data))
     stream.on('end', () => this.emit('end'))
 
     this.packStream = packStream
-
 
     // FIXME use augmented types to add protocol api
     // @ts-ignore
@@ -336,7 +496,7 @@ export class XClient extends EventEmitter {
   }
 
   // GetAtomName used as cheapest non-modifying request with reply
-// 3 - id for shortest standard atom, "ARC"
+  // 3 - id for shortest standard atom, "ARC"
   ping(cb: XCallback<number>) {
     const start = Date.now()
     // FIXME this will be fixed once we do a huge refactor where protocol calls are defined through typescript using augmented types
@@ -349,7 +509,7 @@ export class XClient extends EventEmitter {
 
   close(cb: XCallback<never>) {
     const cli = this
-    cli.ping(err => {
+    cli.ping((err) => {
       if (err) return cb(err)
       cli.terminate()
       if (cb) cb(null)
@@ -414,7 +574,6 @@ export class XClient extends EventEmitter {
           // FIXME not needed?
           // const b = client.packStream.write_queue[0]
           client.packStream.flush()
-
         } else if (templateType === 'Array') {
           const arrayTemplateType = reqTemplate as [string, Array<number>]
 
@@ -434,7 +593,7 @@ export class XClient extends EventEmitter {
           for (let a = 0; a < arrayTemplateType[1].length; ++a) {
             requestArguments.push(arrayTemplateType[1][a])
           }
-          args.forEach(element => requestArguments.push(element))
+          args.forEach((element) => requestArguments.push(element))
 
           if (callback) {
             this.replies[this.seqNum] = [reqReplTemplate[1], callback]
@@ -465,12 +624,19 @@ export class XClient extends EventEmitter {
     this._unusedIds.push(id)
   }
 
-  unpackEvent(type: number, seq: number, extra: number, code: number, raw: Buffer, headerBuf: Buffer): XEvent {
-    type = type & 0x7F
+  unpackEvent(
+    type: number,
+    seq: number,
+    extra: number,
+    code: number,
+    raw: Buffer,
+    headerBuf: Buffer
+  ): XEvent {
+    type = type & 0x7f
     // FIXME Define an XEvent type for each specific event, instead of XEvent & {...}
     const event: XEvent & { [key: string]: any } = {
       type,
-      seq
+      seq,
     } // TODO: constructor & base functions
     // Remove the most significant bit. See Chapter 1, Event Format section in X11 protocol
     // specification
@@ -480,11 +646,20 @@ export class XClient extends EventEmitter {
       return extUnpacker(type, seq, extra, code, raw)
     }
 
-    if (type === 2 || type === 3 || type === 4 || type === 5 || type === 6) { // motion event
+    if (type === 2 || type === 3 || type === 4 || type === 5 || type === 6) {
+      // motion event
       const values = raw.unpack('LLLssssSC')
       // event.raw = values;
       // TODO: use unpackTo???
-      event.name = [undefined, undefined, 'KeyPress', 'KeyRelease', 'ButtonPress', 'ButtonRelease', 'MotionNotify'][type]
+      event.name = [
+        undefined,
+        undefined,
+        'KeyPress',
+        'KeyRelease',
+        'ButtonPress',
+        'ButtonRelease',
+        'MotionNotify',
+      ][type]
       event.time = extra
       event.keycode = code
       event.root = values[0]
@@ -496,7 +671,8 @@ export class XClient extends EventEmitter {
       event.y = values[6]
       event.buttons = values[7]
       event.sameScreen = values[8]
-    } else if (type === 7 || type === 8) { // EnterNotify || LeaveNotify
+    } else if (type === 7 || type === 8) {
+      // EnterNotify || LeaveNotify
       event.name = type === 7 ? 'EnterNotify' : 'LeaveNotify'
       let values = raw.unpack('LLLssssSC')
       event.root = values[0]
@@ -507,8 +683,8 @@ export class XClient extends EventEmitter {
       event.x = values[5]
       event.y = values[6]
       event.values = values
-
-    } else if (type === 12) { // Expose
+    } else if (type === 12) {
+      // Expose
       const values = raw.unpack('SSSSS')
       event.name = 'Expose'
       event.wid = extra
@@ -517,7 +693,8 @@ export class XClient extends EventEmitter {
       event.width = values[2]
       event.height = values[3]
       event.count = values[4] // TODO: ???
-    } else if (type === 16) { // CreateNotify
+    } else if (type === 16) {
+      // CreateNotify
       const values = raw.unpack('LssSSSc')
       event.name = 'CreateNotify'
       event.parent = extra
@@ -529,18 +706,21 @@ export class XClient extends EventEmitter {
       event.borderWidth = values[5]
       event.overrideRedirect = !!values[6]
       // x, y, width, height, border
-    } else if (type === 17) { // destroy notify
+    } else if (type === 17) {
+      // destroy notify
       const values = raw.unpack('L')
       event.name = 'DestroyNotify'
       event.event = extra
       event.wid = values[0]
-    } else if (type === 18) { // UnmapNotify
+    } else if (type === 18) {
+      // UnmapNotify
       const values = raw.unpack('LC')
       event.name = 'UnmapNotify'
       event.event = extra
       event.wid = values[0]
       event.fromConfigure = !!values[1]
-    } else if (type === 19) { // MapNotify
+    } else if (type === 19) {
+      // MapNotify
       const values = raw.unpack('LC')
       event.name = 'MapNotify'
       event.event = extra
@@ -585,20 +765,23 @@ export class XClient extends EventEmitter {
       event.mask = values[6]
       // 322, [ 12582925, 0, 0, 484, 316, 1, 12, 0
       // console.log([extra, code, values]);
-    } else if (type === 28) {// PropertyNotify
+    } else if (type === 28) {
+      // PropertyNotify
       event.name = 'PropertyNotify'
       const values = raw.unpack('LLC')
       event.wid = extra
       event.atom = values[0]
       event.time = values[1]
       event.state = values[2]
-    } else if (type === 29) {// SelectionClear
+    } else if (type === 29) {
+      // SelectionClear
       event.name = 'SelectionClear'
       event.time = extra
       const values = raw.unpack('LL')
       event.owner = values[0]
       event.selection = values[1]
-    } else if (type === 30) {// SelectionRequest
+    } else if (type === 30) {
+      // SelectionRequest
       event.name = 'SelectionRequest'
       // TODO check this
       event.time = extra
@@ -608,7 +791,8 @@ export class XClient extends EventEmitter {
       event.selection = values[2]
       event.target = values[3]
       event.property = values[4]
-    } else if (type === 31) {// SelectionNotify
+    } else if (type === 31) {
+      // SelectionNotify
       event.name = 'SelectionNotify'
       // TODO check this
       event.time = extra
@@ -617,12 +801,13 @@ export class XClient extends EventEmitter {
       event.selection = values[1]
       event.target = values[2]
       event.property = values[3]
-    } else if (type === 33) {// ClientMessage
+    } else if (type === 33) {
+      // ClientMessage
       event.name = 'ClientMessage'
       event.format = code
       event.wid = extra
       event.message_type = raw.unpack('L')[0]
-      const format = (code === 32) ? 'LLLLL' : (code === 16) ? 'SSSSSSSSSS' : 'CCCCCCCCCCCCCCCCCCCC'
+      const format = code === 32 ? 'LLLLL' : code === 16 ? 'SSSSSSSSSS' : 'CCCCCCCCCCCCCCCCCCCC'
       event.data = raw.unpack(format, 4)
     } else if (type === 34) {
       event.name = 'MappingNotify'
@@ -637,108 +822,105 @@ export class XClient extends EventEmitter {
     // TODO: move error parsers to corereqs.js
 
     this.packStream.get(8, (headerBuf: Buffer) => {
-        const res = headerBuf.unpack('CCSL')
-        const type = res[0]
-        const seqNum = res[2]
-        const badValue = res[3]
+      const res = headerBuf.unpack('CCSL')
+      const type = res[0]
+      const seqNum = res[2]
+      const badValue = res[3]
 
-        if (type === 0) {
-          const errorCode = res[1]
-          let longstack: StackTrace
-          if (this.options.debug) {
-            longstack = this.seq2stack[seqNum]
-            console.log(this.seq2stack[seqNum].stack)
-          }
-
-          // unpack error packet (32 bytes for all error types, 8 of them in CCSL header)
-          this.packStream.get(24, (buf) => {
-
-            const res = buf.unpack('SC')
-            const message = xErrors[errorCode]
-            const badParam = badValue
-            const minorOpcode = res[0]
-            const majorOpcode = res[1]
-
-            const error = new XError(errorCode, seqNum, badParam, minorOpcode, majorOpcode, message)
-            error.longstack = longstack
-
-            const extUnpacker = this.errorParsers[errorCode]
-            if (extUnpacker) {
-              extUnpacker(error, errorCode, seqNum, badValue, buf)
-            }
-
-            const handler = this.replies[seqNum]
-            if (handler) {
-              const callback = handler[1]
-              const handled = callback(error)
-              if (!handled) {
-                this.emit('error', error)
-              }
-              // TODO: should we delete seq2stack and reply even if there is no handler?
-              if (this.options.debug) {
-                delete this.seq2stack[seqNum]
-              }
-              delete this.replies[seqNum]
-            } else {
-              this.emit('error', error)
-            }
-            this.expectReplyHeader()
-          })
-          return
-        } else if (type > 1) {
-          this.packStream.get(24, (buf) => {
-            const extra = res[3]
-            const code = res[1]
-            const ev = this.unpackEvent(type, seqNum, extra, code, buf, headerBuf)
-
-            // raw event 32-bytes packet (primarily for use in SendEvent);
-            // TODO: Event::pack based on event parameters, inverse to unpackEvent
-            ev.rawData = Buffer.alloc(32)
-            headerBuf.copy(ev.rawData)
-            buf.copy(ev.rawData, 8)
-
-            this.emit('event', ev)
-            if (ev.wid) {
-              const ee = this.eventConsumers[ev.wid]
-              if (ee) {
-                ee.emit('event', ev)
-              }
-            }
-            if (ev.parent) {
-              const ee = this.eventConsumers[ev.parent]
-              if (ee) {
-                ee.emit('child-event', ev)
-              }
-            }
-            this.expectReplyHeader()
-          })
-          return
+      if (type === 0) {
+        const errorCode = res[1]
+        let longstack: StackTrace
+        if (this.options.debug) {
+          longstack = this.seq2stack[seqNum]
+          console.log(this.seq2stack[seqNum].stack)
         }
 
-        let optData = res[1]
-        const lengthTotal = res[3]            // in 4-bytes units, _including_ this header
-        const bodylength = 24 + lengthTotal * 4 // 24 is rest if 32-bytes header
+        // unpack error packet (32 bytes for all error types, 8 of them in CCSL header)
+        this.packStream.get(24, (buf) => {
+          const res = buf.unpack('SC')
+          const message = xErrors[errorCode]
+          const badParam = badValue
+          const minorOpcode = res[0]
+          const majorOpcode = res[1]
 
-        this.packStream.get(bodylength, (data) => {
+          const error = new XError(errorCode, seqNum, badParam, minorOpcode, majorOpcode, message)
+          error.longstack = longstack
+
+          const extUnpacker = this.errorParsers[errorCode]
+          if (extUnpacker) {
+            extUnpacker(error, errorCode, seqNum, badValue, buf)
+          }
 
           const handler = this.replies[seqNum]
-          if (handler && handler[0]) {
-            const unpack = handler[0] as Function
-            if (this.pendingAtoms[seqNum]) {
-              optData = seqNum
-            }
-
-            const result = unpack.call(this, data, optData)
+          if (handler) {
             const callback = handler[1]
-            callback(null, result)
-            // TODO: add multiple replies flag and delete handler only after last reply (eg ListFontsWithInfo)
+            const handled = callback(error)
+            if (!handled) {
+              this.emit('error', error)
+            }
+            // TODO: should we delete seq2stack and reply even if there is no handler?
+            if (this.options.debug) {
+              delete this.seq2stack[seqNum]
+            }
             delete this.replies[seqNum]
+          } else {
+            this.emit('error', error)
           }
-          // wait for new packet from server
           this.expectReplyHeader()
         })
+        return
+      } else if (type > 1) {
+        this.packStream.get(24, (buf) => {
+          const extra = res[3]
+          const code = res[1]
+          const ev = this.unpackEvent(type, seqNum, extra, code, buf, headerBuf)
+
+          // raw event 32-bytes packet (primarily for use in SendEvent);
+          // TODO: Event::pack based on event parameters, inverse to unpackEvent
+          ev.rawData = Buffer.alloc(32)
+          headerBuf.copy(ev.rawData)
+          buf.copy(ev.rawData, 8)
+
+          this.emit('event', ev)
+          if (ev.wid) {
+            const ee = this.eventConsumers[ev.wid]
+            if (ee) {
+              ee.emit('event', ev)
+            }
+          }
+          if (ev.parent) {
+            const ee = this.eventConsumers[ev.parent]
+            if (ee) {
+              ee.emit('child-event', ev)
+            }
+          }
+          this.expectReplyHeader()
+        })
+        return
       }
-    )
+
+      let optData = res[1]
+      const lengthTotal = res[3] // in 4-bytes units, _including_ this header
+      const bodylength = 24 + lengthTotal * 4 // 24 is rest if 32-bytes header
+
+      this.packStream.get(bodylength, (data) => {
+        const handler = this.replies[seqNum]
+        if (handler && handler[0]) {
+          const unpack = handler[0] as Function
+          if (this.pendingAtoms[seqNum]) {
+            optData = seqNum
+          }
+
+          const result = unpack.call(this, data, optData)
+          const callback = handler[1]
+          callback(null, result)
+          // TODO: add multiple replies flag and delete handler only after last reply (eg ListFontsWithInfo)
+          delete this.replies[seqNum]
+        }
+        // wait for new packet from server
+        this.expectReplyHeader()
+      })
+    })
   }
 
   private startHandshake(authHost: string) {
@@ -763,25 +945,33 @@ export class XClient extends EventEmitter {
       return process.nextTick(() => callback(null, ext))
     }
 
-    import('./ext/' + extName).then((extModule: XExtensionModule<E>) => {
-      if (!this.display) {
-        throw new Error('Display not initialized')
+    // import('./ext/' + extName).then((extModule: XExtensionModule<E>) => {
+
+    const extModule = (extModules as any)[extName as any] as XExtensionModule<E>
+    if (!extModule) {
+      throw new Error('Ext module not found: ' + extName)
+    }
+
+    if (!this.display) {
+      throw new Error('Display not initialized')
+    }
+    extModule.requireExt(this.display, (err: Error | null, _ext?: E) => {
+      if (err) {
+        return callback(err)
       }
-      extModule.requireExt(this.display, (err: Error | null, _ext?: E) => {
-        if (err) {
-          return callback(err)
-        }
-        if (_ext) {
-          this._extensions[extName] = _ext
-          callback(null, _ext)
-        }
-      })
+      if (_ext) {
+        this._extensions[extName] = _ext
+        callback(null, _ext)
+      }
     })
+    // })
   }
 }
 
-
-export function createClient(options: XConnectionOptions, initCb: XCallback<XDisplay, Error>): XClient {
+export function createClient(
+  options: XConnectionOptions,
+  initCb: XCallback<XDisplay, Error>
+): XClient {
   if (typeof options === 'function') {
     initCb = options
     options = {}
@@ -789,7 +979,7 @@ export function createClient(options: XConnectionOptions, initCb: XCallback<XDis
 
   if (!options) options = {}
 
-  const display: string = options.display ?? (process.env.DISPLAY) ?? ':0'
+  const display: string = options.display ?? process.env.DISPLAY ?? ':0'
 
   const displayMatch = display.match(/^(?:[^:]*?\/)?(.*):(\d+)(?:.(\d+))?$/)
   if (!displayMatch) {
@@ -821,7 +1011,7 @@ export function createClient(options: XConnectionOptions, initCb: XCallback<XDis
   }
   const client = new XClient(displayNum, screenNum, options)
 
-  const connectStream = function() {
+  const connectStream = function () {
     if (socketPath) {
       stream = net.createConnection(socketPath)
     } else {
@@ -847,7 +1037,7 @@ export function createClient(options: XConnectionOptions, initCb: XCallback<XDis
   }
   connectStream()
   if (initCb) {
-    client.on('connect', display => {
+    client.on('connect', (display) => {
       // opt-in BigReq
       if (!options.disableBigRequests) {
         client.require<BigRequest>('big-requests', (err, BigReq) => {

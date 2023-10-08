@@ -1,15 +1,14 @@
 {
-  "name": "browser-x11",
-  "version": "0.0.0",
+  "name": "@berstend/node-x11-typescript",
+  "version": "0.0.3",
   "description": "",
   "keywords": [],
-  "main": "./dist/browser-x11.umd.js",
-  "module": "./dist/browser-x11.es5.js",
-  "typings": "./dist/types/browser-x11.d.ts",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
-  "author": "erik <bleh>",
+  "author": "erik <bleh> and more",
   "repository": {
     "type": "git",
     "url": ""
@@ -21,7 +20,8 @@
   "scripts": {
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
+    "build": "tsc --module commonjs",
+    "build_old": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
     "test:legacy": "node test-runner.js",
     "test": "jest --coverage",

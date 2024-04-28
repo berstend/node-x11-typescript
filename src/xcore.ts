@@ -1026,7 +1026,16 @@ export function createClient(
         // Retry connection with TCP on localhost
         socketPath = null
         host = 'localhost'
-        connectStream()
+        try {
+          connectStream()
+        } catch (err2) {
+          if (initCb && !cbCalled) {
+            cbCalled = true
+            initCb(err2 as Error)
+          } else {
+            client.emit('error', err2)
+          }
+        }
       } else if (initCb && !cbCalled) {
         cbCalled = true
         initCb(err)
